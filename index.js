@@ -371,11 +371,11 @@ app.get("/api/download/alldownloader", async (req, res) => {
 
     try {
         var anu = await alldl(`${url}`)
-        let res = await anu.data
+        let res = await anu.json()
         let result = {
         status: true, 
         creator: global.creator, 
-        result: res
+        result: res.data
         }
         res.json(result)
     } catch (error) {
@@ -421,11 +421,11 @@ app.get("/api/download/ytmp3", async (req, res) => {
 
     try {
         var anu = await alldl(`${url}`)
-        let res = await anu.data
+        let res = await anu.json()
         res.json({
             status: true,
             creator: global.creator,
-            result: res
+            result: res.data
         });
     } catch (error) {
         console.log(error);
@@ -439,11 +439,11 @@ app.get("/api/download/ytmp4", async (req, res) => {
 
     try {
         var anu = await alldl(`${url}`)
-        let res = await anu.data
+        let res = await anu.json()
         res.json({
             status: true,
             creator: global.creator,
-            result: res
+            result: res.data
         });
     } catch (error) {
         console.log(error);
