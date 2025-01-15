@@ -371,11 +371,11 @@ app.get("/api/download/alldownloader", async (req, res) => {
 
     try {
         var anu = await alldl(`${url}`)
-        let res = await anu
+        let results = await anu
         let result = {
         status: true, 
         creator: global.creator, 
-        result: res
+        result: results
         }
         res.json(result)
     } catch (error) {
