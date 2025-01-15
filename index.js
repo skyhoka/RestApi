@@ -375,9 +375,7 @@ app.get("/api/download/alldownloader", async (req, res) => {
         let result = {
         status: true, 
         creator: global.creator, 
-        result: {
-        data: res.data
-        }
+        result: res
         }
         res.json(result)
     } catch (error) {
