@@ -36,7 +36,6 @@
     "qrcode": "^1.5.4",
     "rahad-media-downloader": "^2.1.14",
     "rahad-all-downloader": "^2.1.14", 
-    "ruhend-scraper": "^8.0.8", 
     "yt-search": "^2.12.1"
   }
 }
