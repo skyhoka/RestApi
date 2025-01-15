@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const axios = require("axios")
 const { getBuffer, fetchJson } = require('./function/function.js') 
-//const { alldl } = require("rahad-all-downloader")
+const { alldl } = require("rahad-all-downloader")
 const { stalk } = require("node-tiklydown")
 const { setTimeout: sleep } = require('timers/promises');
 const { groq } = require('./function/openai.js') 
@@ -419,7 +419,7 @@ app.get("/api/download/ytmp3", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await YtMp3(`${url}`)
+        var anu = await alldl(`${url}`)
 
         res.json({
             status: true,
@@ -437,7 +437,7 @@ app.get("/api/download/ytmp4", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await YtMp4(`${url}`)
+        var anu = await alldl(`${url}`)
 
         res.json({
             status: true,
