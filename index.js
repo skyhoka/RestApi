@@ -3,7 +3,6 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const bodyParser = require('body-parser');
-const { MongoClient } = require('mongodb')
 const fs = require("fs");
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,120 +42,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "function")));
 app.use(bodyParser.raw({ limit: '50mb', type: '*/*' }));
-
-async function DellAllSecurity() {
-  try {
-    let data = {
-    status: true, 
-    security: "Berhasil Menghapus Semua Nomor"
-    }
-    const client = await MongoClient.connect(database_mongodb.url);
-    const db = client.db(database_mongodb.dbname);
-    const collection = db.collection(database_mongodb.collection.security);
-    await collection.deleteMany({})
-    return data
-  } catch (err) {
-    console.log('Error:', err);
-  }
-}
-
-async function addSecurity(num) {
-  try {
-    apikeyinput = num.toLowerCase()
-    let data = {
-    status: true, 
-    security: "Berhasil Menambahkan Nomor", 
-    number: apikeyinput
-    }
-    const client = await MongoClient.connect(database_mongodb.url);
-    const db = client.db(database_mongodb.dbname);
-    const collection = db.collection(database_mongodb.collection.security);
-    await collection.insertOne({ number: apikeyinput })
-    return data
-  } catch (err) {
-    console.log('Error:', err);
-  }
-}
-
-async function getSecurityDatabase() {
-  try {
-    const client = await MongoClient.connect(database_mongodb.url)
-    const db = await client.db(database_mongodb.dbname);
-    const collection = await db.collection(database_mongodb.collection.security)
-    const data = await collection.find().toArray();
-    const rst = await data.filter(e => e.number)
-    return rst
-  } catch (err) {
-    console.log('Error:', err);
-  }
-}
-
-async function delSecurity(apikeyinput) {
-  try {
-    apikeyinput = apikeyinput.toLowerCase()
-    let data = {
-    status: true, 
-    security: "Berhasil Menghapus Nomor", 
-    number: apikeyinput
-    }
-    const client = await MongoClient.connect(database_mongodb.url);
-    const db = client.db(database_mongodb.dbname);
-    const collection = db.collection(database_mongodb.collection.security);
-    await collection.deleteOne({ number: apikeyinput })
-    return data
-  } catch (err) {
-    console.log('Error:', err);
-  }
-}
-
-
-async function getApikeyDatabase() {
-  try {
-    const client = await MongoClient.connect(database_mongodb.url)
-    const db = await client.db(database_mongodb.dbname);
-    const collection = await db.collection(database_mongodb.collection.apikey)
-    const data = await collection.find().toArray();
-    const rst = await data.filter(e => e.apikey)
-    return rst
-  } catch (err) {
-    console.log('Error:', err);
-  }
-}
-
-async function addApikey(apikeyinput) {
-  try {
-    apikeyinput = apikeyinput.toLowerCase()
-    let data = {
-    status: true, 
-    apikey: "Berhasil Menambahkan Apikey"
-    }
-    const client = await MongoClient.connect(database_mongodb.url);
-    const db = client.db(database_mongodb.dbname);
-    const collection = db.collection(database_mongodb.collection.apikey);
-    await collection.insertOne({ apikey: apikeyinput })
-    return data
-  } catch (err) {
-    console.log('Error:', err);
-  }
-}
-
-
-async function delApikey(apikeyinput) {
-  try {
-    apikeyinput = apikeyinput.toLowerCase()
-    let data = {
-    status: true, 
-    apikey: "Berhasil Menghapus Apikey!"
-    }
-    const client = await MongoClient.connect(database_mongodb.url);
-    const db = client.db(database_mongodb.dbname);
-    const collection = db.collection(database_mongodb.collection.apikey);
-    await collection.deleteOne({ apikey: apikeyinput })
-    return data
-  } catch (err) {
-    console.log('Error:', err);
-  }
-}
 
 app.get('/api/orkut/createpayment', async (req, res) => {
     const { apikey, amount } = req.query;
@@ -611,103 +496,6 @@ app.get("/api/search/ytsearch", async (req, res) => {
 })
 
 
-app.get("/security/list", async (req, res) => {
-    try {
-      let result = await getSecurityDatabase()
-      return res.json({
-      security: result.map(e => e.number)
-      })
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
-app.get("/security/add", async (req, res) => {
-    try {     
-      let nomor = req.query.nomor
-      if (isNaN(nomor)) return res.json("Nomor Tidak Valid!")
-      nomor = nomor.replace(/[^0-9]/g, "") + "@s.whatsapp.net"
-      if (!nomor) return res.send("Nomor Tidak Ditemukan!")
-      const result = await getSecurityDatabase()
-     // if (result.map(e => e.number).includes(nomor)) return res.json("Nomor Sudah Tidak Terdaftar!")
-      const dt = await addSecurity(nomor)
-      return res.json(dt)
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-})
-
-
-app.get("/security/del", async (req, res) => {
-    try {     
-      let { nomor } = req.query
-      if (isNaN(nomor)) return res.json("Nomor Tidak Valid!")
-      apikey = nomor.toLowerCase()
-      nomor = nomor.replace(/[^0-9]/g, "") + "@s.whatsapp.net"
-      const result = await getSecurityDatabase()
-      if (!result.map(e => e.number).includes(nomor)) return res.json("Nomor Tidak Terdaftar!")
-      const dt = await delSecurity(nomor)
-      return res.json(dt)
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
-app.get("/security/delall", async (req, res) => {
-    try {     
-      let dt = await DellAllSecurity()
-      return res.json(dt)
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
-app.get("/apikey/list", async (req, res) => {
-    try {
-      let result = await getApikeyDatabase()
-      return res.json({
-      apikey: [...result.filter(e => e.apikey)]
-      })
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." })
-    }
-})
-
-app.get("/apikey/add", async (req, res) => {
-    try {     
-      let { apikey } = req.query
-      if (!apikey) return res.send("Masukan Apikey!")
-      apikey = apikey.toLowerCase()
-      const result = await getApikeyDatabase()
-      if (result.map(e => e.apikey).includes(apikey)) return res.json("Apikey Sudah Terdaftar!")
-      const dt = await addApikey(apikey)
-      return res.json(dt)
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
-app.get("/apikey/del", async (req, res) => {
-    try {     
-      let { apikey } = req.query
-      if (!apikey) return res.send("Masukan Apikey!")
-      apikey = apikey.toLowerCase()
-      const result = await getApikeyDatabase()
-      if (!result.map(e => e.apikey).includes(apikey)) return res.json("Apikey Tidak Terdaftar!")
-      const dt = await delApikey(apikey)
-      return res.json(dt)
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
 app.use((err, req, res, next) => {
   console.log(err.stack);
   res.status(500).send("Error");
@@ -718,7 +506,7 @@ app.use((req, res, next) => {
 res.send("Hello World")
 });
 
-// Jalankan server
+
 app.listen(PORT, () => {
   console.log(`Server Telah Berjalan > http://localhost:${PORT}`)
 })
