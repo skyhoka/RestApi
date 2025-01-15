@@ -374,7 +374,7 @@ app.get("/api/download/alldownloader", async (req, res) => {
         let result = {
         status: true, 
         creator: global.creator, 
-        result: anu.metadata
+        result: anu.data
         }
         res.json(result)
     } catch (error) {
@@ -424,7 +424,7 @@ app.get("/api/download/ytmp3", async (req, res) => {
         res.json({
             status: true,
             creator: global.creator,
-            result: anu
+            result: anu.data
         });
     } catch (error) {
         console.log(error);
@@ -442,7 +442,7 @@ app.get("/api/download/ytmp4", async (req, res) => {
         res.json({
             status: true,
             creator: global.creator,
-            result: anu     
+            result: anu.data
         });
     } catch (error) {
         console.log(error);
