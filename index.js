@@ -420,12 +420,12 @@ app.get("/api/download/ytmp3", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await alldl(`${url}`)
+        var anu = await YtMp3(`${url}`)
         let res = await anu.json()
         res.json({
             status: true,
             creator: global.creator,
-            result: res.data
+            result: res
         });
     } catch (error) {
         console.log(error);
@@ -438,12 +438,12 @@ app.get("/api/download/ytmp4", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await alldl(`${url}`)
+        var anu = await YtMp4(`${url}`)
         let res = await anu.json()
         res.json({
             status: true,
             creator: global.creator,
-            result: res.data
+            result: res
         });
     } catch (error) {
         console.log(error);
