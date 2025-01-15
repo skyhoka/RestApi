@@ -371,10 +371,11 @@ app.get("/api/download/alldownloader", async (req, res) => {
 
     try {
         var anu = await alldl(`${url}`)
+        let res = await anu.data
         let result = {
         status: true, 
         creator: global.creator, 
-        result: anu
+        result: res
         }
         res.json(result)
     } catch (error) {
@@ -419,11 +420,12 @@ app.get("/api/download/ytmp3", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await alldl(`${url}`).then(e => e.data)
+        var anu = await alldl(`${url}`)
+        let res = await anu.data
         res.json({
             status: true,
             creator: global.creator,
-            result: anu
+            result: res
         });
     } catch (error) {
         console.log(error);
@@ -436,12 +438,12 @@ app.get("/api/download/ytmp4", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await alldl(`${url}`).then(e => e.data)
-
+        var anu = await alldl(`${url}`)
+        let res = await anu.data
         res.json({
             status: true,
             creator: global.creator,
-            result: anu
+            result: res
         });
     } catch (error) {
         console.log(error);
