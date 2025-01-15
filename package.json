@@ -34,8 +34,7 @@
     "openai": "^4.76.3",
     "path": "^0.12.7",
     "qrcode": "^1.5.4",
-    "rahad-all-downloader": "^2.1.17", 
-    "ruhend-scraper": "^8.0.8", 
+    "rahad-media-downloader": "^2.1.14",
     "yt-search": "^2.12.1"
   }
 }
