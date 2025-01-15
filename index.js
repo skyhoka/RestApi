@@ -8,24 +8,17 @@ const fs = require("fs");
 const app = express();
 const PORT = process.env.PORT || 5000;
 const axios = require("axios")
-const { getBuffer, fetchJson } = require('./function/function.js') 
-const { alldl } = require("rahad-all-downloader")
-const { stalk } = require("node-tiklydown")
+const { getBuffer, fetchJson } = require('./public/function.js') 
 const { setTimeout: sleep } = require('timers/promises');
-const { groq } = require('./function/openai.js') 
-const { YtMp3, YtMp4 } = require('./function/youtube.js') 
-const scp = require("caliph-api")
-const yts = require("yt-search")
-const { pinterest2, pinterest } = require('./function/pinterest.js') 
-const { googleImage } = require('./function/gimage.js') 
-const { fbdl } = require('./function/facebook.js') 
-const { shortUrl } = require('./function/tinyurl.js') 
-const { remini } = require('./function/remini.js')
-const { igdl } = require('./function/instagram.js') 
-const { brat } = require('./function/brat.js') 
-const { chatbot } = require('./function/gpt.js')
-const { uploaderImg } = require('./function/uploadImage.js');
-const { tiktokdl } = require('./function/tiktok.js') 
+const { groq } = require('./public/openai.js') 
+const { YtMp3, YtMp4 } = require('./public/youtube.js') 
+const { fbdl } = require('./public/facebook.js') 
+const { remini } = require('./public/remini.js')
+const { igdl } = require('./public/instagram.js') 
+const { brat } = require('./public/brat.js') 
+const { chatbot } = require('./public/gpt.js')
+const { uploaderImg } = require('./public/uploadImage.js');
+const { tiktokdl } = require('./public/tiktok.js') 
 const {
   convertCRC16,
   generateTransactionId,
@@ -34,7 +27,7 @@ const {
   generateQRIS,
   createQRIS,
   checkQRISStatus
-} = require('./function/orkut.js') 
+} = require('./public/orkut.js') 
 
 
 app.enable("trust proxy");
@@ -57,7 +50,7 @@ async function DellAllSecurity() {
     await collection.deleteMany({})
     return data
   } catch (err) {
-    console.log('Error:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -75,7 +68,7 @@ async function addSecurity(num) {
     await collection.insertOne({ number: apikeyinput })
     return data
   } catch (err) {
-    console.log('Error:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -88,7 +81,7 @@ async function getSecurityDatabase() {
     const rst = await data.filter(e => e.number)
     return rst
   } catch (err) {
-    console.log('Error:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -106,7 +99,7 @@ async function delSecurity(apikeyinput) {
     await collection.deleteOne({ number: apikeyinput })
     return data
   } catch (err) {
-    console.log('Error:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -120,7 +113,7 @@ async function getApikeyDatabase() {
     const rst = await data.filter(e => e.apikey)
     return rst
   } catch (err) {
-    console.log('Error:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -137,7 +130,7 @@ async function addApikey(apikeyinput) {
     await collection.insertOne({ apikey: apikeyinput })
     return data
   } catch (err) {
-    console.log('Error:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -155,7 +148,7 @@ async function delApikey(apikeyinput) {
     await collection.deleteOne({ apikey: apikeyinput })
     return data
   } catch (err) {
-    console.log('Error:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -206,13 +199,14 @@ app.get('/api/orkut/cekstatus', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 })
-
+// Endpoint untuk servis dokumen HTML
 app.get('/', (req, res) => {
-res.sendFile(path.join(__dirname, 'index.html'));
+  var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
+  console.log("Client : " + ip)
+  res.sendFile(path.join(__dirname, 'index.html'));
 })
 
-
-app.get("/api/ai/openai-prompt", async (req, res) => {
+app.get("/api/tools/openai", async (req, res) => {
     const { prompt, msg } = req.query;
     if (!prompt || !msg) return res.json("Isi Parameternya!");
 
@@ -232,62 +226,12 @@ app.get("/api/ai/openai-prompt", async (req, res) => {
             result: anu.respon     
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
 
-app.get("/api/ai/openai", async (req, res) => {
-    const { msg } = req.query;
-    if (!msg) return res.json("Isi Parameternya!");
-
-    try {
-        var anu = await groq(`${msg}`)
-        if (!anu.status) {
-        res.json ({
-        status: false,
-        creator: global.creator,
-        result: anu.respon
-        })
-        }
-
-        res.json({
-            status: true,
-            creator: global.creator,
-            result: anu.respon     
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
-app.get("/api/ai/gpt4", async (req, res) => {
-    const { text } = req.query;
-    if (!text) return res.json("Isi Parameternya!");
-
-    try {
-        var anu = await chatbot.send(`${text}`)
-        if (!anu?.choices[0]?.message?.content) {
-        res.json ({
-        status: false,
-        creator: global.creator,
-        result: null
-        })
-        }
-
-        res.json({
-            status: true,
-            creator: global.creator,
-            result: anu.choices[0].message.content
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
-app.get("/api/ai/gpt-3-5-turbo", async (req, res) => {
+app.get("/api/tools/gptchat1", async (req, res) => {
     const { text } = req.query;
     if (!text) return res.json("Isi Parameternya!");
 
@@ -307,13 +251,13 @@ app.get("/api/ai/gpt-3-5-turbo", async (req, res) => {
             result: anu.choices[0].message.content
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
 
 
-app.get("/api/ai/gemini", async (req, res) => {
+app.get("/api/tools/gemini", async (req, res) => {
     const { text } = req.query;
     if (!text) return res.json("Isi Parameternya!");
 
@@ -342,13 +286,13 @@ const anu = await result.response.text()
             result: anu
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
 
 
-app.get("/api/download/fbdl", async (req, res) => {
+app.get("/api/downloader/fbdl", async (req, res) => {
     const { url } = req.query;
     if (!url) return res.json("Isi Parameternya!");
 
@@ -360,31 +304,12 @@ app.get("/api/download/fbdl", async (req, res) => {
         result: anu
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
 
-app.get("/api/download/alldownloader", async (req, res) => {
-    const { url } = req.query;
-    if (!url) return res.json("Isi Parameternya!");
-
-    try {
-        var anu = await alldl(`${url}`)
-        let results = await anu
-        let result = {
-        status: true, 
-        creator: global.creator, 
-        result: results
-        }
-        res.json(result)
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "An error occurred while fetching data." });
-    }
-})
-
-app.get("/api/download/igdl", async (req, res) => {
+app.get("/api/downloader/igdl", async (req, res) => {
     const { url } = req.query;
     if (!url) return res.json("Isi Parameternya!");
 
@@ -392,12 +317,12 @@ app.get("/api/download/igdl", async (req, res) => {
         var anu = await igdl(`${url}`)
         res.json(anu)
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
 
-app.get("/api/download/tiktokdl", async (req, res) => {
+app.get("/api/downloader/tiktokdl", async (req, res) => {
     const { url } = req.query;
     if (!url) return res.json("Isi Parameternya!");
 
@@ -410,43 +335,45 @@ app.get("/api/download/tiktokdl", async (req, res) => {
             result: anu     
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
 
-app.get("/api/download/ytmp3", async (req, res) => {
+app.get("/api/downloader/ytmp3", async (req, res) => {
     const { url } = req.query;
     if (!url) return res.json("Isi Parameternya!");
 
     try {
         var anu = await YtMp3(`${url}`)
-        let res = await anu.json()
+
         res.json({
             status: true,
             creator: global.creator,
-            result: res
+            metadata: anu.metadata, 
+            download: anu.download             
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 });
 
-app.get("/api/download/ytmp4", async (req, res) => {
+app.get("/api/downloader/ytmp4", async (req, res) => {
     const { url } = req.query;
     if (!url) return res.json("Isi Parameternya!");
 
     try {
         var anu = await YtMp4(`${url}`)
-        let res = await anu.json()
+
         res.json({
             status: true,
             creator: global.creator,
-            result: res
+            metadata: anu.metadata, 
+            download: anu.download         
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 });
@@ -461,54 +388,11 @@ app.get("/api/tools/remini", async (req, res) => {
       await res.set("Content-Type", "image/png")
       await res.send(result)
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.send(error)
     }
 })
 
-app.get("/api/tools/tinyurl", async (req, res) => {
-    try {     
-      const { url } = req.query
-      if (!url) return res.json("Isi Parameternya!");
-      if (!url.startsWith("https://")) res.json("Link tautan tidak valid!")
-      const result = await shortUrl(url)
-      if (!result) return res.json("Error!");
-      res.json({
-      status: true, 
-      creator: global.creator, 
-      link: result
-      })
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-})
-
-app.get("/api/tools/tiktokstalk", async (req, res) => {
-    try {     
-      const { user } = req.query
-      if (!user) return res.json("Isi Parameternya!");
-      const result = await stalk(user).then(res => res.data)
-      if (!result) return res.json("Error!");
-      let value = {
-      nama: result.user.nickname, 
-      user: result.user.uniqueId, 
-      bio: result.user.signature, 
-      privatemode: result.user.privateAccount,
-      profile: result.user.avatarMedium, 
-      followers: result.stats.followerCount, 
-      following: result.stats.followingCount
-      }
-      res.json({
-      status: true, 
-      creator: global.creator, 
-      result: value
-      })
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-})
 
 app.post("/api/tools/upload", async (req, res) => {
     try {     
@@ -518,101 +402,10 @@ app.post("/api/tools/upload", async (req, res) => {
       if (!result.status) return res.send("Image Tidak Ditemukan!")
       return res.json(result)
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.send(error)
     }
 })
-
-
-app.get("/api/search/pinterest", async (req, res) => {
-    try {     
-      const { q } = req.query
-      if (!q) return res.json("Isi Parameternya!");
-      const result = await pinterest2(q)
-      if (!result) return res.json("Error!");
-      res.json({
-      status: true, 
-      creator: global.creator, 
-      result: result
-      })
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-})
-
-app.get("/api/search/sfile", async (req, res) => {
-    try {     
-      const { q } = req.query
-      if (!q) return res.json("Isi Parameternya!");
-      let result = await scp.search.sfile(q)
-      if (!result) return res.json("Error!");
-      res.json({
-      status: true, 
-      creator: global.creator, 
-      result: result.result
-      })
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-})
-
-app.get("/api/search/happymod", async (req, res) => {
-    try {     
-      const { q } = req.query
-      if (!q) return res.json("Isi Parameternya!");
-      let result = await scp.search.happymod(q)
-      result = result.result.map((e) => {
-      return { icon: e.thumb, name: e.title, link: e.link }
-     })
-      if (!result) return res.json("Error!");
-      res.json({
-      status: true, 
-      creator: global.creator, 
-      result: result
-      })
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-})
-
-app.get("/api/search/gimage", async (req, res) => {
-    try {     
-      const { q } = req.query
-      if (!q) return res.json("Isi Parameternya!");
-      const result = await googleImage(q)
-      if (!result) return res.json("Error!");
-      res.json({
-      status: true, 
-      creator: global.creator, 
-      result: result
-      })
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-})
-
-
-app.get("/api/search/ytsearch", async (req, res) => {
-    try {     
-      const { q } = req.query
-      if (!q) return res.json("Isi Parameternya!");
-      const result = await yts(q)
-      if (!result) return res.json("Error!");
-      res.json({
-      status: true, 
-      creator: global.creator, 
-      result: [...result.all]
-      })
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-})
-
 
 app.get("/security/list", async (req, res) => {
     try {
@@ -621,7 +414,7 @@ app.get("/security/list", async (req, res) => {
       security: result.map(e => e.number)
       })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
@@ -637,7 +430,7 @@ app.get("/security/add", async (req, res) => {
       const dt = await addSecurity(nomor)
       return res.json(dt)
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.send(error)
     }
 })
@@ -654,7 +447,7 @@ app.get("/security/del", async (req, res) => {
       const dt = await delSecurity(nomor)
       return res.json(dt)
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
@@ -664,7 +457,7 @@ app.get("/security/delall", async (req, res) => {
       let dt = await DellAllSecurity()
       return res.json(dt)
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
@@ -676,7 +469,7 @@ app.get("/apikey/list", async (req, res) => {
       apikey: [...result.filter(e => e.apikey)]
       })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." })
     }
 })
@@ -691,7 +484,7 @@ app.get("/apikey/add", async (req, res) => {
       const dt = await addApikey(apikey)
       return res.json(dt)
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
@@ -706,25 +499,28 @@ app.get("/apikey/del", async (req, res) => {
       const dt = await delApikey(apikey)
       return res.json(dt)
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: "An error occurred while fetching data." });
     }
 })
 
-app.use((err, req, res, next) => {
-  console.log(err.stack);
-  res.status(500).send("Error");
+
+
+
+// Error Handling Middleware
+app.use((req, res, next) => {
+  res.status(404).send("Sorry can't find that!");
 });
 
-
-app.use((req, res, next) => {
-res.send("Hello World")
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
 });
 
 // Jalankan server
 app.listen(PORT, () => {
-  console.log(`Server Telah Berjalan > http://localhost:${PORT}`)
-})
+  console.log(`Server is running on port ${PORT}`);
+});
 
 
 
