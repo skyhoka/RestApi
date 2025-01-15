@@ -370,7 +370,7 @@ app.get("/api/download/alldownloader", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await alldl(`${url}`).then(e => e.data)
+        var anu = await alldl(`${url}`)
         let result = {
         status: true, 
         creator: global.creator, 
