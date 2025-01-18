@@ -11,7 +11,7 @@ const { getBuffer, fetchJson } = require('./function/function.js')
 const { stalk } = require("node-tiklydown")
 const { setTimeout: sleep } = require('timers/promises');
 const { groq } = require('./function/openai.js') 
-const scp2 = require("ruhend-scraper")
+const { ytsearch, ytmp3, ytmp4 } = require('@dark-yasiya/yt-dl.js')
 const scp = require("caliph-api")
 const yts = require("yt-search")
 const { pinterest2, pinterest } = require('./function/pinterest.js') 
@@ -20,7 +20,6 @@ const { fbdl } = require('./function/facebook.js')
 const { shortUrl } = require('./function/tinyurl.js') 
 const { remini } = require('./function/remini.js')
 const { igdl } = require('./function/instagram.js') 
-const { brat } = require('./function/brat.js') 
 const { chatbot } = require('./function/gpt.js')
 const { uploaderImg } = require('./function/uploadImage.js');
 const { tiktokdl } = require('./function/tiktok.js') 
@@ -304,11 +303,11 @@ app.get("/api/download/ytmp3", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await scp2.ytmp3(`${url}`)
+        var anu = await ytmp3(`${url}`)
         res.json({
             status: true,
             creator: global.creator,
-            result: anu
+            result: anu.result
         });
     } catch (error) {
         console.log(error);
@@ -321,11 +320,11 @@ app.get("/api/download/ytmp4", async (req, res) => {
     if (!url) return res.json("Isi Parameternya!");
 
     try {
-        var anu = await scp2.ytmp4(`${url}`)
+        var anu = await ytmp4(`${url}`)
         res.json({
             status: true,
             creator: global.creator,
-            result: anu
+            result: anu.result
         });
     } catch (error) {
         console.log(error);
