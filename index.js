@@ -11,7 +11,7 @@ const { getBuffer, fetchJson } = require('./function/function.js')
 const { stalk } = require("node-tiklydown")
 const { setTimeout: sleep } = require('timers/promises');
 const { groq } = require('./function/openai.js') 
-const { ytsearch, ytmp3, ytmp4 } = require('@dark-yasiya/yt-dl.js')
+const { ytsearch, ytmp3, ytmp4 } = require('@vreden/youtube_scraper')
 const scp = require("caliph-api")
 const yts = require("yt-search")
 const { pinterest2, pinterest } = require('./function/pinterest.js') 
@@ -307,7 +307,8 @@ app.get("/api/download/ytmp3", async (req, res) => {
         res.json({
             status: true,
             creator: global.creator,
-            result: anu.result
+            metadata: anu.metadata, 
+            download: anu.download
         });
     } catch (error) {
         console.log(error);
@@ -324,7 +325,8 @@ app.get("/api/download/ytmp4", async (req, res) => {
         res.json({
             status: true,
             creator: global.creator,
-            result: anu.result
+            metadata: anu.metadata, 
+            download: anu.download
         });
     } catch (error) {
         console.log(error);
